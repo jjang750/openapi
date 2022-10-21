@@ -24,7 +24,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-@WebFilter(urlPatterns = "/api")
+@WebFilter(urlPatterns = "/openapi")
 @Order(0)
 public class ApiRequestFilter extends OncePerRequestFilter {
 
@@ -42,7 +42,7 @@ public class ApiRequestFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         log.debug("doFilterInternal : " + path);
 
-        if(!path.startsWith("/api")) {
+        if(!path.startsWith("/openapi")) {
             filterChain.doFilter(request, response);
             return;
         }
