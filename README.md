@@ -11,7 +11,7 @@
   7. Thymeleaf
   8. JDK 11
   9. Postgresql
- 10. Swagger
+ 10. Swagger[http://localhost:8080/swagger-ui/index.html]
 ---------
 ## application.properties Environment
   PS_HOST=PostgreSQL URL;
