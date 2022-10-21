@@ -1,7 +1,7 @@
-## openapi
+# openapi
 ----
 
-# Open Api 개발
+## Open Api 개발
   1. Content type Json
   2. Rest Api
   3. Path Variable
@@ -11,8 +11,9 @@
   7. Thymeleaf
   8. JDK 11
   9. Postgresql
+ 10. Swagger
 ---------
-# application.properties Environment
+## application.properties Environment
   PS_HOST=PostgreSQL URL;
   PS_USER=PostgreSQLUser ID;
   PS_PASSWORD=PostgreSQLPassword
