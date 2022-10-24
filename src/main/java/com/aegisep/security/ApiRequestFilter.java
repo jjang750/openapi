@@ -2,6 +2,7 @@ package com.aegisep.security;
 
 import com.aegisep.auth.ApiUserDetails;
 import com.aegisep.auth.ApiUserDetailsService;
+import com.aegisep.auth.TokenNotFoundException;
 import com.aegisep.repository.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public class ApiRequestFilter extends OncePerRequestFilter {
 
             context.setAuthentication(authentication);
 
-        }catch (Exception ex) {
+        }catch (TokenNotFoundException ex) {
             log.error(ex.getMessage());
             response.setStatus(401);
             return;

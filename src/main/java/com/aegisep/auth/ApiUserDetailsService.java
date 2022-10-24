@@ -19,10 +19,8 @@ public class ApiUserDetailsService implements UserDetailsService {
     }
 
     public ApiUserDetails loadUserByToken(String token) throws TokenNotFoundException {
-        UserVo userVo = userMapper.getAuthenticationByToken(token);
-        if (userVo == null) {
-            throw new TokenNotFoundException("Unauthorized");
-        }
+        UserVo userVo = userMapper.getAuthenticationByToken(token)
+                .orElseThrow(() -> new TokenNotFoundException("Unauthorized token"));
         return new ApiUserDetails(userVo);
     }
 }

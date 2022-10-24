@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Mapper
 public interface UserMapper {
-    UserVo getAuthenticationByToken(String token);
+    Optional<UserVo> getAuthenticationByToken(String token);
 }
