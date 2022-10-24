@@ -22,7 +22,7 @@
             where "aptcd" = '${aptcd}' and "billym" = ${billym}
 	 	]]>
     </select>
-    <!--    <update id="EditPasswd" parameterType="com.aegisep.security.dto.PwdChangeDto">-->
+    <!--    <update id="EditPasswd" parameterType="com.aegisep.filter.dto.PwdChangeDto">-->
     <!--		<![CDATA[-->
 
     <!--	 	]]>-->

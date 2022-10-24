@@ -1,16 +1,17 @@
-package com.aegisep.security;
+package com.aegisep.filter;
 
+import com.aegisep.Constants;
+import com.aegisep.auth.ApiAuthenticationToken;
 import com.aegisep.auth.ApiUserDetails;
 import com.aegisep.auth.ApiUserDetailsService;
 import com.aegisep.auth.TokenNotFoundException;
-import com.aegisep.repository.UserMapper;
+import com.aegisep.dto.TableAuthority;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
@@ -68,12 +70,15 @@ public class ApiRequestFilter extends OncePerRequestFilter {
             SecurityContext context = SecurityContextHolder.getContext();
             ApiUserDetails userDetails = userDetailsService.loadUserByToken(token);
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+            ApiAuthenticationToken authenticationToken = new ApiAuthenticationToken(
+                    token,
                     userDetails.getUsername(),
                     userDetails.getPassword(),
-                    userDetails.getAuthorities());
+                    userDetails.getAuthorities(),
+                    userDetails.getTableAuthorities()
+            );
 
-            context.setAuthentication(authentication);
+            context.setAuthentication(authenticationToken);
 
         }catch (TokenNotFoundException ex) {
             log.error(ex.getMessage());

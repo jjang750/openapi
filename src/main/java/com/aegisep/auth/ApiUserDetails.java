@@ -1,5 +1,6 @@
 package com.aegisep.auth;
 
+import com.aegisep.dto.TableAuthority;
 import com.aegisep.dto.UserVo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,8 +22,11 @@ public class ApiUserDetails implements UserDetails, Serializable {
     private Boolean credentialsNonExpired = true;
     private Boolean isEnabled = true;
 
-    public ApiUserDetails(UserVo userVo) {
+    private Collection<TableAuthority> tableAuthorities;
+
+    public ApiUserDetails(UserVo userVo, Collection<TableAuthority> tableAuthorities) {
         this.userVo = userVo;
+        this.tableAuthorities = tableAuthorities;
     }
 
     @Override
@@ -41,6 +45,8 @@ public class ApiUserDetails implements UserDetails, Serializable {
     public String getUsername() {
         return username;
     }
+
+    public Collection<TableAuthority> getTableAuthorities() {return this.tableAuthorities;}
 
     @Override
     public boolean isAccountNonExpired() {

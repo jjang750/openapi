@@ -1,6 +1,7 @@
 package com.aegisep.config;
 
 
+import com.aegisep.auth.ApiAuthenticationToken;
 import com.aegisep.dto.BilldataVo;
 import com.aegisep.repository.BilldataMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -62,7 +66,14 @@ public class RestConfig {
         log.debug("command : " + command);
         log.debug("paging : " + paging);
         log.debug("RequestBody : " + map);
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        ApiAuthenticationToken token =
+                (ApiAuthenticationToken) context.getAuthentication();
         try {
+            log.debug("Authentication token : " + token.getToken());
+            log.debug("Authentication table authorize : " + token.getTableAuthorities());
+
             if (command.equals("billdata")) {
                 return billdata(command, paging, map);
             }

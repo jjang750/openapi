@@ -1,0 +1,36 @@
+{
+	"info": {
+		"_postman_id": "6fb11d33-41e3-41f7-8496-9cabb1ac1aa6",
+		"name": "thymeleaf",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "api",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "e4aee890-bbca-40aa-8c2f-cfd2616d1282"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"commands\": [{\"component\": \"RoomTemperatureSetting\", \"capability\": \"voiceaddress44089.thermostatMode\", \"command\": \"setMode\", \"arguments\": [\"away\"]}]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/openapi/billdata/1"
+			},
+			"response": []
+		}
+	]
+}
