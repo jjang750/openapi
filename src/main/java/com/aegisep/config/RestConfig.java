@@ -85,15 +85,17 @@ public class RestConfig {
             /*  테이블 접근 권한이 있는 경우 실행 */
             if (is_authority) {
                  /* 테이블 접근 권한 있지만 실행 메소드 없다면 에러 */
-
                 HashMap<String, Object> returnMap = messageToJson(token.getUUID(), "success");
                 returnMap.put("data", executeMethod("billdata",command, paging, map));
 
                 return ResponseEntity.ok().body(returnMap);
             }
-        }catch (JsonProcessingException | InvocationTargetException | NoSuchMethodException |
-                IllegalAccessException ignored) {
+        }catch (JsonProcessingException | InvocationTargetException | IllegalAccessException ignored) {
+            log.error(token.getUUID() + "] " + ignored.getMessage(), ignored);
             return ResponseEntity.internalServerError().body(messageToJson(token.getUUID(), ignored.getMessage()));
+        }catch (NoSuchMethodException noSuchMethodException) {
+            log.error(token.getUUID() + "] " + noSuchMethodException.getMessage(), noSuchMethodException);
+            return ResponseEntity.internalServerError().body(messageToJson(token.getUUID(), "The request is malformed."));
         }
         return ResponseEntity.badRequest().body(messageToJson(token.getUUID(),"The request is malformed."));
     }
@@ -125,7 +127,6 @@ public class RestConfig {
             Method method = this.getClass().getMethod(name, params);
             return (Collection<?>) method.invoke(this, args);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
             throw e;
         }
