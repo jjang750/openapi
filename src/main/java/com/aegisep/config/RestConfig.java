@@ -3,9 +3,11 @@ package com.aegisep.config;
 
 import com.aegisep.auth.ApiAuthenticationToken;
 import com.aegisep.dto.BilldataVo;
+import com.aegisep.dto.TableAuthority;
 import com.aegisep.repository.BilldataMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,15 +15,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 @RestController
 public class RestConfig {
@@ -54,7 +55,7 @@ public class RestConfig {
     @ResponseBody
     @GetMapping(value ="/openapi/{command}/{paging}", produces = "application/json; charset=UTF-8")
     @PostMapping(value ="/openapi/{command}/{paging}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<String> openapi(
+    public ResponseEntity<HashMap<String, Object>> openapi(
             @Parameter(description = "Command", required = true, example = "billdata")
             @PathVariable String command,
             @Parameter(description = "Paging Count * 200", required = true, example = "1")
@@ -73,21 +74,60 @@ public class RestConfig {
         try {
             log.debug("Authentication token : " + token.getToken());
             log.debug("Authentication table authorize : " + token.getTableAuthorities());
+            log.debug("Authentication UUID : " + token.getUUID());
 
-            if (command.equals("billdata")) {
-                return billdata(command, paging, map);
+            Collection<TableAuthority> tableAuthorities = token.getTableAuthorities();
+            boolean is_authority = tableAuthorities.
+                    stream().
+                    allMatch(tableAuthority -> tableAuthority.getTablename().equals(command));
+
+            log.debug("Authentication table authorized : " + is_authority);
+            /*  테이블 접근 권한이 있는 경우 실행 */
+            if (is_authority) {
+                 /* 테이블 접근 권한 있지만 실행 메소드 없다면 에러 */
+
+                HashMap<String, Object> returnMap = messageToJson(token.getUUID(), "success");
+                returnMap.put("data", executeMethod("billdata",command, paging, map));
+
+                return ResponseEntity.ok().body(returnMap);
             }
-        }catch (JsonProcessingException ignored) {
-            return ResponseEntity.internalServerError().body(ignored.getMessage());
+        }catch (JsonProcessingException | InvocationTargetException | NoSuchMethodException |
+                IllegalAccessException ignored) {
+            return ResponseEntity.internalServerError().body(messageToJson(token.getUUID(), ignored.getMessage()));
         }
-        return ResponseEntity.badRequest().body("The request is malformed.");
+        return ResponseEntity.badRequest().body(messageToJson(token.getUUID(),"The request is malformed."));
     }
-
+    /* 리턴 메시지를 JSON 타입으로 변경 */
+    private HashMap<String, Object> messageToJson(String UUID, Object body) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("request_uuid", UUID);
+        map.put("request_time", Calendar.getInstance().getTime().toString());
+        map.put("message", body);
+        return map;
+    }
     /* Open Api process */
-    public ResponseEntity<String> billdata(String command,int paging,HashMap<String, Object> map)
+    public Collection<BilldataVo> billdata(String command, Integer paging, HashMap<String, Object> map)
             throws JsonProcessingException {
         log.info("billdata : enter");
-        Collection<BilldataVo> billdataVos = billdataMapper.getBillDataListByAptcdAndBillym("12345", 202210);
-        return ResponseEntity.ok(new ObjectMapper().writeValueAsString(billdataVos));
+        return billdataMapper.getBillDataListByAptcdAndBillym("12345", 202210);
+    }
+
+    /* 메소드를 찾아 실행한다. */
+    private Collection<?> executeMethod(String name, Object... args)
+            throws JsonProcessingException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        log.info("executeMethod : " + name);
+        try {
+            Class<?>[] params = new Class<?>[args.length];      // 파라미터의 개수만큼
+            for (int i = 0; i < args.length; i++) {        // 타입 추출
+                params[i] = args[i].getClass();
+            }
+            // 인스턴스의 클래스 타입에서 메소드를 찾는다.
+            Method method = this.getClass().getMethod(name, params);
+            return (Collection<?>) method.invoke(this, args);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            throw e;
+        }
     }
 }

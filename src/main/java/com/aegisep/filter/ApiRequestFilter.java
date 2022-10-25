@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -41,6 +42,9 @@ public class ApiRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         log.info("doFilterInternal : start " );
+
+        String uuid = UUID.randomUUID().toString();
+        log.info( "request UUID : " + uuid );
 
         String path = request.getRequestURI();
         log.debug("doFilterInternal : " + path);
@@ -75,7 +79,8 @@ public class ApiRequestFilter extends OncePerRequestFilter {
                     userDetails.getUsername(),
                     userDetails.getPassword(),
                     userDetails.getAuthorities(),
-                    userDetails.getTableAuthorities()
+                    userDetails.getTableAuthorities(),
+                    uuid
             );
 
             context.setAuthentication(authenticationToken);
