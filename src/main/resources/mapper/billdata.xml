@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.aegisep.repository.BilldataMapper">
-    <select id="getBillDataListByAptcdAndBillym" resultType="com.aegisep.dto.BilldataVo">
+    <select id="getBillDataListByAptcdAndBillym" resultType="hashmap">
         <![CDATA[
             select
                 "seq"

@@ -108,7 +108,7 @@ public class RestConfig {
         return map;
     }
     /* Open Api process */
-    public Collection<BilldataVo> billdata(String command, Integer paging, HashMap<String, Object> map)
+    public Collection<HashMap> billdata(String command, Integer paging, HashMap<String, Object> map)
             throws JsonProcessingException {
         log.info("billdata : enter");
         return billdataMapper.getBillDataListByAptcdAndBillym("12345", 202210);

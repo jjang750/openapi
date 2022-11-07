@@ -5,8 +5,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 @Mapper
 public interface BilldataMapper {
-    Collection<BilldataVo> getBillDataListByAptcdAndBillym(@Param("aptcd") String aptcd, @Param("billym") int billym);
+    Collection<HashMap> getBillDataListByAptcdAndBillym(@Param("aptcd") String aptcd, @Param("billym") int billym);
 }
